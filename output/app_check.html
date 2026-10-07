@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Campus Customs: App Check (Problem 11)</title>
+<style>
+  :root { --ink: #232537; --muted: #6b6878; --indigo: #27325a; --night: #161d36; --gold: #e3a345; --sand: #f3ead8; --line: #e5d9c3; --paper: #fffcf6; --green: #3d7f6f; --brick: #a5493c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); background: var(--paper); }
+  header { background: linear-gradient(120deg, var(--night), var(--indigo) 60%, #6a5a86); color: #fff; padding: 2.5rem 1.5rem 2rem; }
+  header .wrap, main { max-width: 1080px; margin: 0 auto; }
+  h1, h2, h3 { font-family: "Iowan Old Style", Palatino, Georgia, serif; line-height: 1.2; }
+  h1 { margin: 0 0 .4rem; font-size: 2.3rem; }
+  header p { margin: .2rem 0; color: #e7e3ef; }
+  main { padding: 1.5rem 1.5rem 4rem; }
+  .summary { width: 100%; border-collapse: collapse; margin: 1rem 0 2.5rem; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .summary th, .summary td { text-align: left; padding: .65rem .9rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .summary th { background: var(--sand); font-size: .85rem; letter-spacing: .04em; }
+  .pass { color: var(--green); font-weight: 700; white-space: nowrap; }
+  section.check { margin: 0 0 3.5rem; padding-top: 1rem; border-top: 3px solid var(--gold); }
+  section.check > h2 { font-size: 1.8rem; margin: .6rem 0 .3rem; }
+  .ask { display: inline-block; margin: .3rem 0 1rem; padding: .35rem .8rem; border-radius: 999px; background: var(--indigo); color: #fff; font-size: .92rem; }
+  figure { margin: 1.25rem 0 1.75rem; }
+  figure a img { display: block; width: 100%; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(22,29,54,.12); }
+  figcaption { margin-top: .6rem; color: var(--ink); }
+  figcaption b { color: var(--indigo); }
+  .proof { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--green); border-radius: 10px; padding: .9rem 1.1rem; margin: 1rem 0 1.5rem; }
+  .proof h3 { margin: 0 0 .5rem; font-size: 1.1rem; }
+  table.db { border-collapse: collapse; margin: .4rem 0 .6rem; font-size: .92rem; }
+  table.db th, table.db td { border: 1px solid var(--line); padding: .3rem .6rem; text-align: center; }
+  table.db th { background: var(--sand); }
+  td.hit { background: #fff1d6; font-weight: 700; }
+  td.zero { color: var(--brick); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85rem; }
+  pre { background: var(--night); color: #e7e3ef; padding: .8rem 1rem; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; }
+  .muted { color: var(--muted); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  @media (max-width: 800px) { .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>App Check: Campus Customs Shop + Chatbot</h1>
+    <p>Homework 4, Problem 11 · tested on the live local site (React front end on <code>localhost:5173</code>, FastAPI + PydanticAI backend on <code>:8000</code>, model <code>gpt-5.6-luna</code> via Portkey).</p>
+    <p>Screenshots: real sessions in Chrome at 1440×900, guest shopper, taken 2026-10-07. Click any screenshot to open it full size.</p>
+  </div>
+</header>
+
+<main>
+  <table class="summary">
+    <tr><th>#</th><th>Check</th><th>Result</th></tr>
+    <tr><td>1</td><td><a href="#check-1">Chat checks the inventory level of an item</a> (honest stock and price from the database), plus an honest "sold out" answer</td><td class="pass">✓ Pass</td></tr>
+    <tr><td>2</td><td><a href="#check-2">Dynamic search-result cards</a> appear on the page after a category question ("What hoodies do you have?"), and they open the product page</td><td class="pass">✓ Pass</td></tr>
+    <tr><td>3</td><td><a href="#check-3">Problem 9 usability feature: size recommendation</a> (with similar items when the recommended size is sold out)</td><td class="pass">✓ Pass</td></tr>
+  </table>
+
+  <!-- ============================================================ -->
+  <section class="check" id="check-1">
+    <h2>Check 1: Chat checks an item's inventory (honest stock and price)</h2>
+    <span class="ask">Shopper asks: "How many Baseball Left Chest Crewnecks do you have in medium, and what's the price?"</span>
+
+    <figure>
+      <a href="app_check_images/inventory.png"><img src="app_check_images/inventory.png" alt="Chat reply: The Baseball Left Chest Crewneck is $58, and there are 5 left in medium" /></a>
+      <figcaption><b>The chat answers with the exact numbers:</b> "The Baseball Left Chest Crewneck is $58, and there are 5 left in medium." The matching product card also appears on the page.</figcaption>
+    </figure>
+
+    <figure>
+      <a href="app_check_images/inventory_product_page.png"><img src="app_check_images/inventory_product_page.png" alt="Product page for the Baseball Left Chest Crewneck showing $58 and M: Only 5 left" /></a>
+      <figcaption><b>The product page agrees:</b> $58.00 and size M "Only 5 left" (XS and XL sold out). Both views read the same live inventory table.</figcaption>
+    </figure>
+
+    <div class="proof">
+      <h3>Proof from the database (<code>data/campus_customs.db</code>)</h3>
+      <code>SELECT size, quantity FROM inventory WHERE product_id = 'baseball-left-chest-crewneck'</code> · price from <code>catalogue</code> = <b>$58.00</b>
+      <table class="db">
+        <tr><th>XS</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th></tr>
+        <tr><td class="zero">0</td><td>15</td><td class="hit">5</td><td>25</td><td class="zero">0</td><td>25</td></tr>
+      </table>
+      <p>The audit trail (<code>output/audit_trail.json</code>, run <code>c8a628a942</code>) shows the number came from a tool, not the model's memory:</p>
+      <pre>search_products(query="Baseball Left Chest Crewneck") → baseball-left-chest-crewneck, …
+check_stock(product_id="baseball-left-chest-crewneck", size="medium")
+  → {"status": "low_stock", "size": "M", "quantity": 5, "price": 58.0}
+validator retries: 0   (every $ price and stock count in a reply must match a tool result)</pre>
+    </div>
+
+    <h3>Bonus: an honest "sold out"</h3>
+    <span class="ask">Shopper asks: "Do you have the Yale Dad Crewneck in medium?"</span>
+    <figure>
+      <a href="app_check_images/inventory_sold_out.png"><img src="app_check_images/inventory_sold_out.png" alt="Chat: The Yale Dad Crewneck is sold out in medium; similar options appear as cards" /></a>
+      <figcaption><b>No invented stock:</b> "The Yale Dad Crewneck is sold out in medium. It's $58 and available in XS, S, and XXL." It then offers similar crewnecks that do have medium, shown as cards.</figcaption>
+    </figure>
+    <div class="proof">
+      <h3>Proof from the database</h3>
+      <table class="db">
+        <tr><th>Product</th><th>XS</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th><th>Price</th></tr>
+        <tr><td>Yale Dad Crewneck</td><td>15</td><td>8</td><td class="hit zero">0</td><td class="zero">0</td><td class="zero">0</td><td>15</td><td>$58</td></tr>
+        <tr><td>Yale Mom Crewneck</td><td>8</td><td>8</td><td class="hit">12</td><td>8</td><td>15</td><td>2</td><td>$58</td></tr>
+        <tr><td>Yale Sports Crewneck Field Hockey</td><td class="zero">0</td><td>8</td><td class="hit">15</td><td class="zero">0</td><td>8</td><td>5</td><td>$58</td></tr>
+        <tr><td>Yale Sports Crewneck Volleyball</td><td>25</td><td>15</td><td class="hit">2</td><td>25</td><td>2</td><td>5</td><td>$58</td></tr>
+      </table>
+      <p class="muted">Audit run <code>7a3ef5ec3f</code>: <code>check_stock(yale-dad-crewneck, "medium") → status "sold_out", quantity 0</code>, with <code>similar_in_stock</code> filled automatically, and each of those has M in stock.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="check" id="check-2">
+    <h2>Check 2: Dynamic search-result cards after a category question</h2>
+    <span class="ask">Shopper asks on the Home page: "What hoodies do you have?"</span>
+
+    <figure>
+      <a href="app_check_images/search_cards.png"><img src="app_check_images/search_cards.png" alt="Home page: From your chat, Yale Hoodies, 12 product cards; chat reply beside them" /></a>
+      <figcaption><b>The page updates itself:</b> a "From your chat: Yale Hoodies" section appears at the top of the page with 12 hoodie cards (image, name, price, short description). The chat reply summarizes them: "We found 12 hoodies… The rest are on the page."</figcaption>
+    </figure>
+
+    <div class="two">
+      <figure>
+        <a href="app_check_images/search_cards_page.png"><img src="app_check_images/search_cards_page.png" alt="The hoodie cards with the chat closed" /></a>
+        <figcaption><b>Chat closed:</b> the cards stay on the page as a normal product grid, with a Clear results button.</figcaption>
+      </figure>
+      <figure>
+        <a href="app_check_images/search_card_opens_product.png"><img src="app_check_images/search_card_opens_product.png" alt="Product page for the Basic Hoodie Big Yale after clicking its card" /></a>
+        <figcaption><b>The cards are live links:</b> clicking the first card opened <code>/products/basic-hoodie-big-yale</code>, the single-item page from Problem 3 (large image, full info, sizes and stock).</figcaption>
+      </figure>
+    </div>
+
+    <div class="proof">
+      <h3>How the results reach the page (API contract)</h3>
+      <p>Audit run <code>5410db4990</code>: the agent called <code>search_products(query="hoodies", limit=12)</code> and returned structured output <code>{reply, product_ids[12], results_title: "Yale Hoodies"}</code>. The server rebuilt the 12 cards from the database, and all 12 are hoodies (the catalogue has 27, and a browse shows up to 12):</p>
+      <pre>basic-hoodie-big-yale, brooks-brothers-double-knit-full-zip-hoodie-yale, champion-reverse-weave-hoodie-1,
+crew-left-chest-hoodie, district-vit-hoodie-vintage-bulldog, district-vit-hoodie-vintage-sailor-bulldog,
+fencing-left-chest-hoodie, ice-hockey-left-chest-hoodie, sailing-left-chest-hoodie, squash-left-chest-hoodie,
+the-forest-school-hoodie, volleyball-left-chest-hoodie</pre>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="check" id="check-3">
+    <h2>Check 3: Problem 9 usability feature, size recommendation</h2>
+    <span class="ask">On the Yale Dad Crewneck page, the shopper asks: "I am 5 foot 10 and 170 lb. What size should I get in this?"</span>
+
+    <figure>
+      <a href="app_check_images/size_recommendation.png"><img src="app_check_images/size_recommendation.png" alt="Chat: recommends M, M is sold out, S is the nearest in-stock size, similar crewnecks in M" /></a>
+      <figcaption><b>A real size answer, checked against live stock:</b> "For 5'10" and 170 lb, our general size guide recommends M, but M is sold out in the Yale Dad Crewneck. S is the nearest in-stock size… Yale Mom Crewneck and Yale Sports Crewneck Field Hockey are available in M at $58." The agent understood "this" from the page it was on.</figcaption>
+    </figure>
+
+    <div class="proof">
+      <h3>Proof</h3>
+      <p>Audit run <code>663ef43ea9</code>: <code>recommend_size(product_id="yale-dad-crewneck", height_inches=70, weight_lbs=170)</code> → <code>recommended_size "M"</code>, <code>recommended_status "sold_out"</code>, nearby in-stock size <code>S</code>, plus <code>similar_in_stock</code>. The general size chart puts 5'10" (≤ 70.5 in) and 170 lb (≤ 175 lb) in <b>M</b>. In the database, Yale Dad Crewneck M = 0 and S = 8; Yale Mom Crewneck M = 12; Field Hockey M = 15 (see the table in Check 1). The full write-up of this and the other Problem 9 features is in <code>output/usability.md</code>.</p>
+    </div>
+  </section>
+
+  <p class="muted">Reproduce: run the backend (<code>cd backend && uvicorn main:app --reload --port 8000</code>) and the front end (<code>cd frontend && npm run dev</code>), open <code>http://localhost:5173</code>, and ask the same questions. Every chat turn is recorded in <code>output/audit_trail.json</code>.</p>
+</main>
+</body>
+</html>

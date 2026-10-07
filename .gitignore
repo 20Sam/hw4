@@ -1,0 +1,32 @@
+# Secrets: only .env.example goes to GitHub
+.env
+.env.*
+!.env.example
+
+# Local-only data pack (database + product images)
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Frontend
+node_modules/
+dist/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Audit-trail lock and temp files (the trail itself, output/audit_trail.json, is committed)
+output/*.lock
+output/*.tmp
+output/audit_trail.corrupt-*.json
+
+# Logs
+*.log
